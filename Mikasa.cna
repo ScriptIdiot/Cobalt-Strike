@@ -1,5 +1,5 @@
 # Mikasa
-include(script_resource("script/命令集合.cna")); 
+include(script_resource("modules/Other/RdpThief/RdpThief.cna"));
 
 
 popup beacon {

