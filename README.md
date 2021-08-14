@@ -7,6 +7,7 @@
 
 2021.7.26 更新CVE-2021-1675-36934,参考与 https://github.com/cube0x0/CVE-2021-36934
 
+2021.8.14 更新ZeroLogon(CVE-2020-1472),参考 https://github.com/rsmudge/ZeroLogon-BOF ,失败的话尝试下让Beacon以X64上线
 ## 其他
 
 在实战中发现,如何快速的在一台拿下的机器中搜集登录过的主机、和谁登录过此主机较为重要,于是在 信息搜集 模块中的 RDP 子模块中整合了一下
